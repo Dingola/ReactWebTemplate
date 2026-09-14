@@ -229,6 +229,7 @@ that suffix while rendering.
     |-- server/                 # optional
     |-- src/
     |-- tests/e2e/
+    |-- {{ _copier_conf.answers_file }}.jinja
     |-- Dockerfile.jinja        # optional
     |-- package.json.jinja
     `-- vite.config.ts.jinja
