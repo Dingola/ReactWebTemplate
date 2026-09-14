@@ -1,0 +1,26 @@
+.hero {
+  display: grid;
+  max-width: 48rem;
+  min-height: 55vh;
+  align-content: center;
+  gap: var(--space-4);
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}

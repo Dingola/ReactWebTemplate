@@ -1,0 +1,126 @@
+name: Validate Copier Template
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  DEFAULT_PROJECT_NAME: ReactWebTemplateSmokeTest
+  FULL_PROJECT_NAME: ReactWebTemplateFullTest
+
+jobs:
+  generate_build_and_test:
+    name: Generate, Build, and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout template repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Copier
+        run: python -m pip install "copier>=9,<10"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Generate default project
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/${DEFAULT_PROJECT_NAME}"
+          copier copy \
+            --defaults \
+            --vcs-ref HEAD \
+            --data "project_name=${DEFAULT_PROJECT_NAME}" \
+            --data "display_name=React Web Template Smoke Test" \
+            --data "package_name=react-web-template-smoke-test" \
+            . "${generated_dir}"
+
+          test -f "${generated_dir}/.copier-answers.yml"
+          test -f "${generated_dir}/package.json"
+          test -f "${generated_dir}/src/app/router.tsx"
+          test -f "${generated_dir}/README.md"
+          test ! -e "${generated_dir}/server"
+          test ! -e "${generated_dir}/Dockerfile"
+          test ! -e "${generated_dir}/copier.yml"
+          test ! -e "${generated_dir}/initialize.cmd"
+          test ! -e "${generated_dir}/initialize.ps1"
+          test ! -e "${generated_dir}/template"
+
+      - name: Check default project
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/${DEFAULT_PROJECT_NAME}"
+          cd "${generated_dir}"
+          npm install
+          npm run check
+
+      - name: Generate full project
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/${FULL_PROJECT_NAME}"
+          copier copy \
+            --defaults \
+            --vcs-ref HEAD \
+            --data "project_name=${FULL_PROJECT_NAME}" \
+            --data "display_name=React Web Template Full Test" \
+            --data "package_name=react-web-template-full-test" \
+            --data "include_express=true" \
+            --data "include_docker=true" \
+            --data "deployment=none" \
+            . "${generated_dir}"
+
+          test -f "${generated_dir}/server/index.ts"
+          test -f "${generated_dir}/Dockerfile"
+          test ! -e "${generated_dir}/nginx.conf"
+
+      - name: Check full project
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/${FULL_PROJECT_NAME}"
+          cd "${generated_dir}"
+          npm install
+          npm run check
+
+      - name: Generate GitHub Pages project
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/ReactWebTemplatePagesTest"
+          copier copy \
+            --defaults \
+            --vcs-ref HEAD \
+            --data "project_name=ReactWebTemplatePagesTest" \
+            --data "display_name=React Web Template Pages Test" \
+            --data "package_name=react-web-template-pages-test" \
+            --data "deployment=github_pages" \
+            . "${generated_dir}"
+
+          test -f "${generated_dir}/.github/workflows/deploy_github_pages.yml"
+          grep -q "createHashRouter" "${generated_dir}/src/app/router.tsx"
+
+      - name: Generate Vercel project
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/ReactWebTemplateVercelTest"
+          copier copy \
+            --defaults \
+            --vcs-ref HEAD \
+            --data "project_name=ReactWebTemplateVercelTest" \
+            --data "display_name=React Web Template Vercel Test" \
+            --data "package_name=react-web-template-vercel-test" \
+            --data "deployment=vercel" \
+            . "${generated_dir}"
+
+          test -f "${generated_dir}/vercel.json"
+          grep -q "createBrowserRouter" "${generated_dir}/src/app/router.tsx"

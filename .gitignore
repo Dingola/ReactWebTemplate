@@ -1,0 +1,12 @@
+# Generated-project smoke tests
+_build/
+_build_*/
+
+# Python / Copier
+__pycache__/
+*.py[cod]
+.npm-prefix/
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db

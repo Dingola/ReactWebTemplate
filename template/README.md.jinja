@@ -1,0 +1,283 @@
+# {{ display_name }}
+
+## Build status
+
+[![CI](https://github.com/{{ repository_owner }}/{{ project_name }}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{ repository_owner }}/{{ project_name }}/actions/workflows/ci.yml)
+
+## Table of contents
+
+- [Description](#description)
+- [Technology](#technology)
+- [Supported platforms](#supported-platforms)
+- [Prerequisites](#prerequisites)
+- [Development](#development)
+- [Commands](#commands)
+- [Project structure](#project-structure)
+- [Add a route](#add-a-route)
+- [Configuration and API access](#configuration-and-api-access)
+- [Styling and accessibility](#styling-and-accessibility)
+- [Testing and code quality](#testing-and-code-quality)
+- [Continuous integration](#continuous-integration)
+{% if deployment == 'github_pages' %}- [GitHub Pages deployment](#github-pages-deployment)
+{% elif deployment == 'vercel' %}- [Vercel deployment](#vercel-deployment)
+{% endif %}{% if include_docker %}- [Docker](#docker)
+{% endif %}- [Copier updates](#copier-updates)
+- [Visual Studio Code and Visual Studio](#visual-studio-code-and-visual-studio)
+
+## Description
+
+{{ project_description }}
+
+This project was generated from
+[Dingola/ReactWebTemplate](https://github.com/Dingola/ReactWebTemplate). It provides a
+neutral, production-oriented React and TypeScript foundation without application-specific
+example features.
+
+The generated source tree contains only a neutral application shell and infrastructure.
+Add pages and features that represent the actual product instead of retaining demo
+business logic.
+
+## Technology
+
+- React and React Router
+- strict TypeScript
+- Vite development server and production build
+- CSS Modules and global design tokens
+- Zod environment validation
+- ESLint, Stylelint, and Prettier
+- Vitest and React Testing Library
+- Playwright browser tests
+{% if include_express %}- Express production server and API foundation
+{% endif %}{% if include_docker %}- multi-stage Docker production image
+{% endif %}
+
+## Supported platforms
+
+- current stable Chrome, Edge, Firefox, and Safari releases
+- Windows, Linux, and macOS development environments supported by Node.js 24
+- responsive layouts down to a minimum viewport width of 320 pixels
+
+## Prerequisites
+
+- Node.js 24 LTS or newer
+- {{ 'pnpm through Corepack' if package_manager == 'pnpm' else 'npm' }}
+
+Verify the installed runtime:
+
+```powershell
+node --version
+```
+
+{% if package_manager == 'pnpm' %}
+Enable pnpm once, then install the project:
+
+```powershell
+corepack enable
+```
+
+```powershell
+pnpm install
+```
+{% else %}
+Install the project:
+
+```powershell
+npm install
+```
+{% endif %}
+
+Copy `.env.example` to `.env.local` when local values must differ from the defaults. Do
+not commit secrets or local environment files.
+
+## Development
+
+Start the development server:
+
+```powershell
+{{ 'pnpm dev' if package_manager == 'pnpm' else 'npm run dev' }}
+```
+
+Open `http://localhost:5173`. Vite updates the browser as source files change.
+{% if include_express %}
+
+The same command starts Express at `http://localhost:3000`. Requests below `/api` are
+proxied to Express during development. The included `/api/health` endpoint is a small
+operational example, not an application feature.
+{% endif %}
+
+Create an optimized production build:
+
+```powershell
+{{ 'pnpm build' if package_manager == 'pnpm' else 'npm run build' }}
+```
+
+Preview the client build locally:
+
+```powershell
+{{ 'pnpm preview' if package_manager == 'pnpm' else 'npm run preview' }}
+```
+{% if include_express %}
+
+After building, run the production Express server with:
+
+```powershell
+{{ 'pnpm start' if package_manager == 'pnpm' else 'npm start' }}
+```
+{% endif %}
+
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `{{ 'pnpm dev' if package_manager == 'pnpm' else 'npm run dev' }}` | Start development with hot reload |
+| `{{ 'pnpm build' if package_manager == 'pnpm' else 'npm run build' }}` | Type-check and create a production build |
+| `{{ 'pnpm typecheck' if package_manager == 'pnpm' else 'npm run typecheck' }}` | Run TypeScript without emitting files |
+| `{{ 'pnpm lint' if package_manager == 'pnpm' else 'npm run lint' }}` | Check TypeScript and React rules |
+| `{{ 'pnpm lint:styles' if package_manager == 'pnpm' else 'npm run lint:styles' }}` | Check CSS rules |
+| `{{ 'pnpm format' if package_manager == 'pnpm' else 'npm run format' }}` | Format supported files |
+| `{{ 'pnpm test' if package_manager == 'pnpm' else 'npm test' }}` | Run unit and component tests once |
+| `{{ 'pnpm test:watch' if package_manager == 'pnpm' else 'npm run test:watch' }}` | Run tests while developing |
+| `{{ 'pnpm test:e2e' if package_manager == 'pnpm' else 'npm run test:e2e' }}` | Run Playwright browser tests |
+| `{{ 'pnpm check' if package_manager == 'pnpm' else 'npm run check' }}` | Run the complete local quality gate |
+
+Install the Playwright browser once before the first local browser test:
+
+```powershell
+{{ 'pnpm exec playwright install chromium' if package_manager == 'pnpm' else 'npx playwright install chromium' }}
+```
+
+## Project structure
+
+```text
+.
+|-- .github/workflows/   # continuous integration{% if deployment != 'none' %} and deployment{% endif %}
+|-- .vscode/             # recommended editor settings and tasks
+|-- docs/                # architecture documentation
+|-- public/              # assets copied without transformation
+|-- src/
+|   |-- app/             # composition, configuration, and routing
+|   |-- components/
+|   |   |-- layout/      # application-wide layout components
+|   |   `-- ui/          # generic presentational components
+|   |-- features/        # cohesive application capabilities
+|   |-- hooks/           # generic React hooks
+|   |-- lib/             # framework-independent infrastructure
+|   |   `-- api/         # HTTP boundary and API errors
+|   |-- pages/           # route-level components
+|   |-- styles/          # reset, design tokens, and global utilities
+|   |-- test/            # shared component-test setup
+|   `-- main.tsx         # browser entry point
+{% if include_express %}|-- server/               # optional Express server and API
+{% endif %}|-- tests/e2e/            # Playwright browser tests
+|-- package.json         # dependencies and project commands
+|-- tsconfig.json        # TypeScript project references
+`-- vite.config.ts       # development and production build
+```
+{% if include_express %}
+
+The optional `server/` directory contains only backend infrastructure. Organize a
+larger backend by route or feature instead of adding unrelated logic to `index.ts`.
+{% endif %}
+
+See [docs/architecture.md](docs/architecture.md) for dependency boundaries, extension
+points, and examples.
+
+## Add a route
+
+Create a route-level component under `src/pages`, then add it to `src/app/router.tsx`.
+Prefer lazy imports for routes that are not required for the first render:
+
+```tsx
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
+```
+
+Keep route components focused on composition. Reusable application behavior belongs in
+`src/features`; generic visual elements belong in `src/components/ui`.
+
+## Configuration and API access
+
+Browser-exposed variables must start with `VITE_`. Add their runtime schema to
+`src/lib/env.ts` as well as a documented placeholder to `.env.example`. Values prefixed
+with `VITE_` are public and must never contain secrets.
+
+Use `apiRequest` from `src/lib/api/apiClient.ts` at the network boundary. Validate
+untrusted responses with Zod before application code relies on them.
+
+## Styling and accessibility
+
+Global design values live in `src/styles/tokens.css`; component styles remain next to
+their components as CSS Modules. The initial shell includes keyboard skip navigation,
+visible focus indicators, semantic landmarks, responsive sizing, and reduced-motion
+handling. Preserve these behaviors as the design evolves.
+
+## Testing and code quality
+
+Vitest runs unit and component tests in a browser-like JSDOM environment. React Testing
+Library encourages tests through accessible user-facing queries. Playwright validates
+the built application in a real Chromium browser.
+
+ESLint checks TypeScript and React rules, Stylelint checks CSS, and Prettier provides a
+single formatting convention. Run the complete gate before pushing:
+
+```powershell
+{{ 'pnpm check' if package_manager == 'pnpm' else 'npm run check' }}
+```
+
+## Continuous integration
+
+`.github/workflows/ci.yml` checks formatting, linting, types, unit tests, the production
+build, and a Chromium smoke test on pushes and pull requests targeting `main`.
+Commit the generated lock file so dependency installation is reproducible; after the
+first commit, changing workflow installation from `npm install` to `npm ci` is
+recommended for npm projects.
+
+{% if deployment == 'github_pages' %}
+## GitHub Pages deployment
+
+The generated project uses hash routing because GitHub Pages does not provide arbitrary
+SPA URL rewrites. Enable **GitHub Actions** as the Pages source in the repository
+settings. A push to `main` then runs the deployment workflow.
+
+{% elif deployment == 'vercel' %}
+## Vercel deployment
+
+`vercel.json` rewrites application routes to `index.html` and assigns long-lived cache
+headers to hashed assets. Import the repository into Vercel and keep the default Vite
+build command and `dist` output directory.
+
+{% endif %}{% if include_docker %}
+## Docker
+
+Build the production image:
+
+```powershell
+docker build -t {{ package_name.split('/')[-1] }} .
+```
+
+Run it:
+
+```powershell
+docker run --rm -p {{ '3000:3000' if include_express else '8080:8080' }} {{ package_name.split('/')[-1] }}
+```
+
+{% endif %}
+## Copier updates
+
+`.copier-answers.yml` records the template source and selected answers. Keep it under
+version control and do not edit it manually. Start updates with a clean Git working
+tree:
+
+```powershell
+copier update
+```
+
+Review and test all changes before committing them. Template updates can conflict with
+intentional application changes; Copier exposes those conflicts instead of silently
+discarding either side.
+
+## Visual Studio Code and Visual Studio
+
+The repository includes recommended VS Code extensions, formatting settings, tasks,
+and browser launch configurations. Visual Studio can open the folder and work with the
+npm scripts, but VS Code is the primary configured environment. No solution file is
+required unless a later backend technology benefits from one.

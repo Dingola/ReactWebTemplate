@@ -1,0 +1,38 @@
+html {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-sans);
+  line-height: 1.6;
+}
+
+body {
+  min-width: 20rem;
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+a {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.fatal-error {
+  width: min(100% - 2rem, 40rem);
+  margin: 15vh auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

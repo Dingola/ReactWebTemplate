@@ -1,0 +1,71 @@
+{
+  "name": "{{ package_name }}",
+  "version": "0.1.0",
+  "private": true,
+  "description": "{{ project_description }}",
+  "author": "{{ author_name }}",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "{% if include_express %}concurrently --kill-others-on-fail \"vite\" \"tsx watch server/index.ts\"{% else %}vite{% endif %}",
+    "build": "tsc -b && vite build{% if include_express %} && tsc -p server/tsconfig.json{% endif %}",
+    "preview": "vite preview",
+{% if include_express %}
+    "start": "node dist-server/index.js",
+{% endif %}
+    "lint": "eslint . --max-warnings 0",
+    "lint:styles": "stylelint \"src/**/*.css\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b --pretty false{% if include_express %} && tsc -p server/tsconfig.json --noEmit --pretty false{% endif %}",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "check": "{% if package_manager == 'pnpm' %}pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm test && pnpm build{% else %}npm run format:check && npm run lint && npm run lint:styles && npm run typecheck && npm run test && npm run build{% endif %}"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+{% if include_express %}
+    "compression": "^1.8.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+{% endif %}
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.3",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+{% if include_express %}
+    "@types/compression": "^1.8.1",
+    "@types/express": "^5.0.6",
+    "concurrently": "^10.0.5",
+    "tsx": "^4.23.13",
+{% endif %}
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.0",
+    "eslint": "^10.10.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.6",
+    "globals": "^17.12.0",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard": "^40.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
+  }
+}

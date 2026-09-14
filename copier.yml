@@ -1,0 +1,101 @@
+_min_copier_version: "9.0.0"
+_subdirectory: template
+_answers_file: .copier-answers.yml
+_exclude:
+  - "{{ '__not_excluded__' if include_express else 'server' }}"
+  - "{{ '__not_excluded__' if include_docker else 'Dockerfile' }}"
+  - "{{ '__not_excluded__' if include_docker else '.dockerignore' }}"
+  - "{{ '__not_excluded__' if include_docker and not include_express else 'nginx.conf' }}"
+  - "{{ '__not_excluded__' if deployment == 'github_pages' else '.github/workflows/deploy_github_pages.yml' }}"
+  - "{{ '__not_excluded__' if deployment == 'vercel' else 'vercel.json' }}"
+
+project_name:
+  type: str
+  help: Repository and technical project name
+  default: ReactWebApp
+  validator: >-
+    {% if not (project_name | regex_search('^[A-Za-z0-9][A-Za-z0-9._-]*$')) %}
+    Use a repository-safe name containing letters, numbers, dots, underscores, or hyphens.
+    {% endif %}
+
+display_name:
+  type: str
+  help: Human-readable application name
+  default: "{{ project_name }}"
+  validator: >-
+    {% if not display_name.strip() %}
+    The display name must not be empty.
+    {% endif %}
+
+package_name:
+  type: str
+  help: npm package name (lowercase, URL-safe)
+  default: "{{ project_name | lower | replace(' ', '-') | replace('_', '-') }}"
+  validator: >-
+    {% if not (package_name | regex_search('^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$')) %}
+    Use a valid lowercase npm package name, for example my-web-app or @scope/my-web-app.
+    {% endif %}
+
+project_description:
+  type: str
+  help: Short project description
+  default: A modern React and TypeScript web application.
+
+author_name:
+  type: str
+  help: Author or organization displayed in package metadata
+  default: Dingola
+
+repository_owner:
+  type: str
+  help: GitHub user or organization that owns the generated repository
+  default: Dingola
+
+package_manager:
+  type: str
+  help: Package manager used by documentation and automation
+  choices:
+    npm: npm
+    pnpm: pnpm
+  default: npm
+
+include_express:
+  type: bool
+  help: Include a small production-ready Express API foundation
+  default: false
+
+include_docker:
+  type: bool
+  help: Include a multi-stage production Docker image
+  default: false
+
+deployment:
+  type: str
+  help: Include deployment-specific configuration
+  choices:
+    No deployment configuration: none
+    GitHub Pages: github_pages
+    Vercel: vercel
+  default: none
+  validator: >-
+    {% if include_express and deployment != 'none' %}
+    GitHub Pages and Vercel configurations in this template deploy the static client only. Choose no deployment configuration for an Express project and deploy it through Docker or a Node.js host.
+    {% endif %}
+
+default_theme:
+  type: str
+  help: Initial color theme before a visitor selects a preference
+  choices:
+    Follow the operating system: system
+    Light: light
+    Dark: dark
+  default: system
+
+_message_after_copy: |
+  Project "{{ display_name }}" was generated successfully.
+
+  Next steps:
+    1. Install dependencies with `{{ 'pnpm install' if package_manager == 'pnpm' else 'npm install' }}`.
+    2. Run `{{ 'pnpm dev' if package_manager == 'pnpm' else 'npm run dev' }}`.
+    3. Review README.md and .env.example.
+    4. Commit .copier-answers.yml so future `copier update` runs work.

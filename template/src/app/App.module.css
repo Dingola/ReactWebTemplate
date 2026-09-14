@@ -1,0 +1,27 @@
+.app {
+  display: grid;
+  min-block-size: 100vh;
+  grid-template-rows: auto 1fr auto;
+}
+
+.main {
+  width: min(100% - 2 * var(--space-4), var(--content-width));
+  margin-inline: auto;
+  padding-block: var(--space-12);
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-medium);
+  background: var(--color-text);
+  color: var(--color-background);
+  transform: translateY(-200%);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}

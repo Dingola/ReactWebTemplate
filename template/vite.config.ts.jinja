@@ -1,0 +1,32 @@
+import { fileURLToPath, URL } from 'node:url';
+
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+{% if deployment == 'github_pages' %}
+  base: process.env.GITHUB_ACTIONS ? '/{{ project_name }}/' : '/',
+{% endif %}
+  server: {
+    port: 5173,
+    strictPort: true,
+{% if include_express %}
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
+{% endif %}
+  },
+  preview: {
+    port: 4173,
+    strictPort: true,
+  },
+  build: {
+    sourcemap: true,
+  },
+});

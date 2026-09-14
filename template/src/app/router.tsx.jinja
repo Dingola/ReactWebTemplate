@@ -1,0 +1,35 @@
+import { lazy, Suspense } from 'react';
+import { {% if deployment == 'github_pages' %}createHashRouter{% else %}createBrowserRouter{% endif %} } from 'react-router-dom';
+
+import { App } from './App';
+
+const HomePage = lazy(() => import('@/pages/HomePage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+
+function RouteFallback() {
+  return <p role="status">Loading…</p>;
+}
+
+export const router = {% if deployment == 'github_pages' %}createHashRouter{% else %}createBrowserRouter{% endif %}([
+  {
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '*',
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <NotFoundPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+]);
