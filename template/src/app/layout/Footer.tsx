@@ -1,6 +1,6 @@
-import { appConfig } from '@/app/config';
+import { Container } from '@/components/layout/Container';
 
-import { Container } from './Container';
+import { appConfig } from '../config';
 import styles from './Footer.module.css';
 
 /** Renders the application-wide footer with the current year and application name. */

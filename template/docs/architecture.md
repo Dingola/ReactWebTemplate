@@ -21,10 +21,13 @@ app/  --------> pages/
 Dependencies should generally point down this diagram:
 
 - `app` composes providers, routes, and application-wide configuration.
+- `app/layout` contains the concrete header and footer of the application shell.
+- `app/providers` contains cross-cutting React contexts such as the color theme.
+- `app/errors` contains application-level error handling.
 - `pages` are route-level compositions and should remain thin.
 - `features` own cohesive application behavior and domain-facing UI.
 - `components/ui` contains generic controls with no application knowledge.
-- `components/layout` contains application-wide layout primitives.
+- `components/layout` contains generic layout primitives with no application knowledge.
 - `hooks` contains generic reusable React behavior.
 - `lib` contains infrastructure and code that should not render UI.
 
@@ -45,16 +48,17 @@ features/
     `-- tests/
 ```
 
-Do not create all of these directories preemptively. The boundary is prepared by the
-template; the generated application should add only directories that contain real
-code.
+Do not create all of these subdirectories preemptively. `features/README.md` deliberately
+keeps the common extension-point name visible across generated applications; replace it
+with real feature directories as the product grows.
 
 ## Application providers
 
-`AppProviders.tsx` is the composition point for cross-cutting React contexts. Add
-providers there for concerns such as localization, authentication, server-state
-caching, notifications, or feature flags. Keep provider-specific configuration in its
-own feature or library module.
+`AppProviders.tsx` is the composition point for cross-cutting React contexts. Generic
+application-wide providers live under `app/providers`; a provider that belongs to one
+product capability stays inside that feature. Add providers for concerns such as
+localization, authentication, server-state caching, notifications, or feature flags
+only when the application requires them.
 
 ## Routing
 
@@ -84,6 +88,34 @@ Use global CSS only for resets, design tokens, document defaults, and genuinely 
 utilities. Keep component-specific styles in CSS Modules next to the component. This
 preserves ordinary CSS skills and prevents accidental selector coupling between
 unrelated features.
+
+## Assets
+
+Use `public` only for files that must keep an exact URL or pass through the build
+unchanged, such as `robots.txt`. Import component- or feature-specific images and fonts
+from a folder beside their consumer so Vite can fingerprint and optimize them. Add a
+shared `src/assets` directory only when multiple unrelated areas use the same imported
+asset; the template intentionally does not create an empty one.
+
+## Optional server
+
+The Express server keeps process startup separate from application construction:
+
+```text
+server/
+|-- config/
+|   `-- environment.ts
+|-- routes/
+|   `-- health.ts
+|-- app.ts
+`-- index.ts
+```
+
+`app.ts` composes middleware, infrastructure routes, API routes, and static client
+delivery without opening a network port. `index.ts` validates the environment and starts
+the listener. This separation lets integration tests import the Express application
+without starting a second process. Add product-specific backend code by feature and
+mount its router in `app.ts`.
 
 ## Testing strategy
 

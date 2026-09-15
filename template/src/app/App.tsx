@@ -1,9 +1,8 @@
 import { Outlet } from 'react-router-dom';
 
-import { Footer } from '@/components/layout/Footer';
-import { Header } from '@/components/layout/Header';
-
 import styles from './App.module.css';
+import { Footer } from './layout/Footer';
+import { Header } from './layout/Header';
 
 /**
  * Provides the persistent application shell shared by all routes.

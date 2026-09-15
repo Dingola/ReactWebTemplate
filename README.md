@@ -175,8 +175,10 @@ The standard project contains:
 
 Optional Express projects add Helmet, compression, size-limited JSON parsing, a health
 endpoint, a Vite development proxy, and production serving of the built application.
-The endpoint is intentionally infrastructure-only; generated projects do not contain
-invented authentication or business features.
+Server construction, validated environment loading, infrastructure routes, and process
+startup are separated so the Express application can be imported without opening a
+network port. Generated projects do not contain invented authentication or business
+features.
 
 See the generated `README.md`, `docs/architecture.md`, and `docs/react-guide.md` for
 project-specific usage and extension guidance.
@@ -227,7 +229,7 @@ that suffix while rendering.
     |-- .vscode/
     |-- docs/
     |-- public/
-    |-- server/                 # optional
+    |-- server/                 # optional app, bootstrap, config, and routes
     |-- src/
     |-- tests/e2e/
     |-- {{ _copier_conf.answers_file }}.jinja

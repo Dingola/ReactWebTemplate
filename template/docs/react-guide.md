@@ -84,6 +84,11 @@ Keep pages focused on arranging components and features. Business behavior belon
 `src/features`, while broadly reusable visual building blocks belong in
 `src/components/ui`.
 
+`src/features/README.md` intentionally preserves the extension point before the first
+product feature exists. This keeps the directory name consistent across projects. A
+feature should represent a user- or business-facing capability; application-wide theme,
+layout, and error handling belong under `src/app` instead.
+
 ## Imports and the source alias
 
 Imports beginning with `@/` are resolved relative to `src`:
@@ -111,6 +116,13 @@ export function Greeting() {
 CSS Module class names are scoped during the build, preventing accidental collisions
 between unrelated components. Prefer design tokens over repeating raw colors, spacing,
 or typography values.
+
+## Assets
+
+Place files in `public` only when they must retain a fixed URL or be copied unchanged.
+Import images, fonts, and other assets used by a component or feature from a nearby
+folder so Vite can include them in the dependency graph. Introduce `src/assets` only
+when an imported asset is genuinely shared across unrelated parts of the application.
 
 ## Data and API access
 
@@ -162,10 +174,13 @@ without validation warnings.
 
 | Location | Responsibility |
 | --- | --- |
-| `src/app` | Startup composition, application configuration, and routing |
-| `src/components/layout` | Application-wide structural UI |
+| `src/app` | Startup composition, routing, concrete shell layout, providers, and errors |
+| `src/app/layout` | Header, footer, and other concrete shell components |
+| `src/app/providers` | Application-wide React contexts and their controls |
+| `src/app/errors` | Application-level error handling and fallbacks |
+| `src/components/layout` | Generic application-independent layout primitives |
 | `src/components/ui` | Generic reusable visual components |
-| `src/features` | Cohesive product capabilities with their UI, hooks, and data access |
+| `src/features` | Stable extension point for cohesive product capabilities |
 | `src/hooks` | Generic reusable hooks |
 | `src/lib` | Framework-independent infrastructure and adapters |
 | `src/pages` | Route-level composition |

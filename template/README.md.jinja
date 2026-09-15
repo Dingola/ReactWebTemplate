@@ -159,11 +159,14 @@ Install the Playwright browser once before the first local browser test:
 |-- docs/                # architecture documentation
 |-- public/              # assets copied without transformation
 |-- src/
-|   |-- app/             # composition, configuration, and routing
+|   |-- app/             # composition, routing, shell, errors, and providers
+|   |   |-- errors/      # application-level error handling
+|   |   |-- layout/      # concrete application shell components
+|   |   `-- providers/   # application-wide React contexts
 |   |-- components/
-|   |   |-- layout/      # application-wide layout components
+|   |   |-- layout/      # generic layout primitives
 |   |   `-- ui/          # generic presentational components
-|   |-- features/        # cohesive application capabilities
+|   |-- features/        # documented extension point for product capabilities
 |   |-- hooks/           # generic React hooks
 |   |-- lib/             # framework-independent infrastructure
 |   |   `-- api/         # HTTP boundary and API errors
@@ -172,6 +175,10 @@ Install the Playwright browser once before the first local browser test:
 |   |-- test/            # shared component-test setup
 |   `-- main.tsx         # browser entry point
 {% if include_express %}|-- server/               # optional Express server and API
+|   |-- config/          # validated server environment
+|   |-- routes/          # infrastructure and API routes
+|   |-- app.ts           # middleware and route composition
+|   `-- index.ts         # process bootstrap and network listener
 {% endif %}|-- tests/e2e/            # Playwright browser tests
 |-- package.json         # dependencies and project commands
 |-- tsconfig.json        # TypeScript project references
@@ -180,8 +187,10 @@ Install the Playwright browser once before the first local browser test:
 ```
 {% if include_express %}
 
-The optional `server/` directory contains only backend infrastructure. Organize a
-larger backend by route or feature instead of adding unrelated logic to `index.ts`.
+The optional server separates application construction from process startup. `app.ts`
+can be imported without opening a port, while `index.ts` owns only environment loading
+and the network listener. Organize a larger backend by feature and compose its routers
+in `app.ts` instead of adding unrelated logic to the bootstrap.
 {% endif %}
 
 See [docs/architecture.md](docs/architecture.md) for dependency boundaries, extension

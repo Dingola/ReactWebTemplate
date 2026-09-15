@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 
-import { appConfig } from '@/app/config';
-import { ThemeToggle } from '@/features/theme/ThemeToggle';
+import { Container } from '@/components/layout/Container';
 
-import { Container } from './Container';
+import { appConfig } from '../config';
+import { ThemeToggle } from '../providers/theme/ThemeToggle';
 import styles from './Header.module.css';
 
 /** Renders the application-wide header, home link, and color-theme control. */
