@@ -13,6 +13,8 @@
 - [Development](#development)
 - [Commands](#commands)
 - [Project structure](#project-structure)
+- [React and TypeScript guide](#react-and-typescript-guide)
+- [API documentation](#api-documentation)
 - [Add a route](#add-a-route)
 - [Configuration and API access](#configuration-and-api-access)
 - [Styling and accessibility](#styling-and-accessibility)
@@ -47,6 +49,7 @@ business logic.
 - ESLint, Stylelint, and Prettier
 - Vitest and React Testing Library
 - Playwright browser tests
+- TypeDoc-generated API documentation
 {% if include_express %}- Express production server and API foundation
 {% endif %}{% if include_docker %}- multi-stage Docker production image
 {% endif %}
@@ -138,6 +141,7 @@ After building, run the production Express server with:
 | `{{ 'pnpm test' if package_manager == 'pnpm' else 'npm test' }}` | Run unit and component tests once |
 | `{{ 'pnpm test:watch' if package_manager == 'pnpm' else 'npm run test:watch' }}` | Run tests while developing |
 | `{{ 'pnpm test:e2e' if package_manager == 'pnpm' else 'npm run test:e2e' }}` | Run Playwright browser tests |
+| `{{ 'pnpm docs' if package_manager == 'pnpm' else 'npm run docs' }}` | Generate HTML API documentation from source comments |
 | `{{ 'pnpm check' if package_manager == 'pnpm' else 'npm run check' }}` | Run the complete local quality gate |
 
 Install the Playwright browser once before the first local browser test:
@@ -171,6 +175,7 @@ Install the Playwright browser once before the first local browser test:
 {% endif %}|-- tests/e2e/            # Playwright browser tests
 |-- package.json         # dependencies and project commands
 |-- tsconfig.json        # TypeScript project references
+|-- typedoc.json         # API documentation configuration
 `-- vite.config.ts       # development and production build
 ```
 {% if include_express %}
@@ -181,6 +186,25 @@ larger backend by route or feature instead of adding unrelated logic to `index.t
 
 See [docs/architecture.md](docs/architecture.md) for dependency boundaries, extension
 points, and examples.
+
+## React and TypeScript guide
+
+See [docs/react-guide.md](docs/react-guide.md) for an introduction to components, JSX,
+props, hooks, routing, CSS Modules, tests, source comments, and the responsibility of
+each source directory.
+
+## API documentation
+
+Exported components, hooks, types, and infrastructure use English TSDoc-compatible
+comments. Generate navigable HTML documentation with:
+
+```powershell
+{{ 'pnpm docs' if package_manager == 'pnpm' else 'npm run docs' }}
+```
+
+TypeDoc writes the generated site to `docs/api`. That directory is intentionally ignored
+because generated output should be reproducible from the source. Documentation
+generation is part of the complete `check` command and continuous integration.
 
 ## Add a route
 
@@ -216,8 +240,9 @@ Vitest runs unit and component tests in a browser-like JSDOM environment. React 
 Library encourages tests through accessible user-facing queries. Playwright validates
 the built application in a real Chromium browser.
 
-ESLint checks TypeScript and React rules, Stylelint checks CSS, and Prettier provides a
-single formatting convention. Run the complete gate before pushing:
+ESLint checks TypeScript and React rules, Stylelint checks CSS, Prettier provides a
+single formatting convention, and TypeDoc validates source documentation. Run the
+complete gate before pushing:
 
 ```powershell
 {{ 'pnpm check' if package_manager == 'pnpm' else 'npm run check' }}
@@ -225,8 +250,9 @@ single formatting convention. Run the complete gate before pushing:
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` checks formatting, linting, types, unit tests, the production
-build, and a Chromium smoke test on pushes and pull requests targeting `main`.
+`.github/workflows/ci.yml` checks formatting, linting, types, unit tests, generated API
+documentation, the production build, and a Chromium smoke test on pushes and pull
+requests targeting `main`.
 Commit the generated lock file so dependency installation is reproducible; after the
 first commit, changing workflow installation from `npm install` to `npm ci` is
 recommended for npm projects.

@@ -10,6 +10,12 @@ function RouteFallback() {
   return <p role="status">Loading…</p>;
 }
 
+/**
+ * Client-side route configuration for the application.
+ *
+ * Route-level components are loaded lazily to keep the initial JavaScript bundle
+ * focused on the application shell.
+ */
 export const router = {% if deployment == 'github_pages' %}createHashRouter{% else %}createBrowserRouter{% endif %}([
   {
     element: <App />,

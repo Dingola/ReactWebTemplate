@@ -5,6 +5,7 @@ import { Container } from '@/components/layout/Container';
 
 import styles from './HomePage.module.css';
 
+/** Renders the neutral start page intended to be replaced by the first product route. */
 export default function HomePage() {
   useDocumentTitle(appConfig.name);
 

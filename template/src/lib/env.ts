@@ -11,4 +11,5 @@ if (!parsedEnvironment.success) {
   throw new Error('Invalid environment configuration. Review .env.example.');
 }
 
+/** Validated browser environment used by application infrastructure. */
 export const environment = parsedEnvironment.data;

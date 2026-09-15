@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "{{ display_name }} API Documentation",
+  "entryPoints": ["src"],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "tsconfig": "tsconfig.app.json",
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/test/**", "**/vite-env.d.ts"],
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeExternals": true,
+  "readme": "none",
+  "useFirstParagraphOfCommentAsSummary": true,
+  "validation": {
+    "notDocumented": true
+  },
+  "requiredToBeDocumented": ["Variable", "Function", "Class", "TypeAlias"],
+  "treatValidationWarningsAsErrors": true
+}

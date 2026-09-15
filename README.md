@@ -11,8 +11,8 @@ project metadata and optional infrastructure into that repository.
 The generated application provides a deliberately neutral foundation rather than a
 portfolio, dashboard, or business-specific example. It includes React, strict
 TypeScript, Vite, React Router, CSS Modules, theme support, validated environment
-configuration, an API client, automated tests, and continuous integration. Express,
-Docker, and deployment files are optional.
+configuration, an API client, generated API documentation, automated tests, and
+continuous integration. Express, Docker, and deployment files are optional.
 
 ## Create a project
 
@@ -168,17 +168,18 @@ The standard project contains:
 - persistent light, dark, and system theme preferences;
 - Zod-validated environment variables and a typed API boundary;
 - ESLint, Stylelint, Prettier, Vitest, Testing Library, and Playwright;
+- TypeDoc with validated English source documentation;
 - VS Code extension, task, formatting, and browser-debugging recommendations; and
-- GitHub Actions checks for formatting, linting, types, tests, builds, and a browser
-  smoke test.
+- GitHub Actions checks for formatting, linting, types, tests, documentation, builds,
+  and a browser smoke test.
 
 Optional Express projects add Helmet, compression, size-limited JSON parsing, a health
 endpoint, a Vite development proxy, and production serving of the built application.
 The endpoint is intentionally infrastructure-only; generated projects do not contain
 invented authentication or business features.
 
-See the generated `README.md` and `docs/architecture.md` for project-specific usage and
-extension guidance.
+See the generated `README.md`, `docs/architecture.md`, and `docs/react-guide.md` for
+project-specific usage and extension guidance.
 
 ## Update a generated project
 
@@ -232,6 +233,7 @@ that suffix while rendering.
     |-- {{ _copier_conf.answers_file }}.jinja
     |-- Dockerfile.jinja        # optional
     |-- package.json.jinja
+    |-- typedoc.json.jinja
     `-- vite.config.ts.jinja
 ```
 

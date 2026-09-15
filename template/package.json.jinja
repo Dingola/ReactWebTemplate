@@ -24,7 +24,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "check": "{% if package_manager == 'pnpm' %}pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm test && pnpm build{% else %}npm run format:check && npm run lint && npm run lint:styles && npm run typecheck && npm run test && npm run build{% endif %}"
+    "docs": "typedoc",
+    "check": "{% if package_manager == 'pnpm' %}pnpm format:check && pnpm lint && pnpm lint:styles && pnpm typecheck && pnpm test && pnpm docs && pnpm build{% else %}npm run format:check && npm run lint && npm run lint:styles && npm run typecheck && npm run test && npm run docs && npm run build{% endif %}"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -63,6 +64,7 @@
     "prettier": "^3.9.6",
     "stylelint": "^17.15.0",
     "stylelint-config-standard": "^40.0.0",
+    "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",
     "vite": "^8.3.0",

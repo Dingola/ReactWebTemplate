@@ -1,3 +1,4 @@
+/** Error returned by the API boundary for unsuccessful HTTP responses. */
 export class ApiError extends Error {
   public constructor(
     message: string,

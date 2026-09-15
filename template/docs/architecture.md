@@ -95,6 +95,20 @@ Prefer observable behavior over implementation details. A feature should not req
 browser test for every branch when faster unit or component tests provide the same
 confidence.
 
+## Documentation strategy
+
+Repository documentation is written in English. Curated guides in `docs` explain
+architecture and development workflows, while TSDoc-compatible source comments define
+the contracts of exported components, hooks, types, and infrastructure.
+
+TypeDoc generates navigable HTML API documentation in `docs/api`. Generated output is
+ignored by Git because it is reproducible with `npm run docs`. The complete quality gate
+also generates the documentation and treats TypeDoc validation warnings as errors.
+
+Document purpose, behavior, side effects, defaults, constraints, and failure modes. Do
+not repeat information already expressed by TypeScript types, and use inline comments
+only when the reason for an implementation decision is not evident from the code.
+
 ## Security and operations
 
 Never expose secrets through `VITE_` variables; Vite embeds them in browser assets. A

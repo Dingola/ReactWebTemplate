@@ -4,6 +4,12 @@ import { getStoredValue, setStoredValue } from '@/lib/storage';
 
 import { ThemeContext, type ThemePreference } from './ThemeContext';
 
+/** Props accepted by {@link ThemeProvider}. */
+export type ThemeProviderProps = {
+  /** Application subtree that receives access to the theme context. */
+  children: ReactNode;
+};
+
 const storageKey = 'theme-preference';
 const defaultPreference: ThemePreference = '{{ default_theme }}';
 
@@ -20,7 +26,13 @@ function getSystemTheme(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+/**
+ * Resolves, applies, and persists the application's color-theme preference.
+ *
+ * A `system` preference tracks operating-system changes without overwriting the
+ * stored preference.
+ */
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const [preference, setPreference] = useState<ThemePreference>(getInitialPreference);
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme);
   const resolvedTheme = preference === 'system' ? systemTheme : preference;

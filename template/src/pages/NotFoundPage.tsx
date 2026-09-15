@@ -4,6 +4,7 @@ import { appConfig } from '@/app/config';
 import { Container } from '@/components/layout/Container';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
+/** Renders the fallback page for URLs that do not match an application route. */
 export default function NotFoundPage() {
   useDocumentTitle(`Page not found · ${appConfig.name}`);
 

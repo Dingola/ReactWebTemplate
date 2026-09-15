@@ -3,6 +3,7 @@ import { appConfig } from '@/app/config';
 import { Container } from './Container';
 import styles from './Footer.module.css';
 
+/** Renders the application-wide footer with the current year and application name. */
 export function Footer() {
   return (
     <footer className={styles.footer}>
