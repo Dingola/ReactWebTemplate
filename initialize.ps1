@@ -117,6 +117,12 @@ if (Test-Path -LiteralPath $bootstrapWorkflow -PathType Leaf) {
     Remove-Item -LiteralPath $bootstrapWorkflow -Force
 }
 
+foreach ($bootstrapScript in @("initialize.cmd", "initialize.sh")) {
+    if (Test-Path -LiteralPath $bootstrapScript -PathType Leaf) {
+        Remove-Item -LiteralPath $bootstrapScript -Force
+    }
+}
+
 Write-Host ""
 Write-Host "Project generation completed successfully."
 Write-Host "Install dependencies, review the generated files, and commit them:"

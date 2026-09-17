@@ -89,6 +89,13 @@ cd CustomerPortal
 .\initialize.cmd
 ```
 
+On Linux or macOS, make the bootstrap executable and run it from the cloned repository:
+
+```bash
+chmod +x initialize.sh
+./initialize.sh
+```
+
 The script uses the repository directory as the human-readable project name and
 converts it to a lowercase npm package name. It validates the Git working tree, runs
 Copier against `gh:Dingola/ReactWebTemplate`, and removes the bootstrap-only files
@@ -113,6 +120,7 @@ development and testing.
 | Description | Package, page, and README description | `A customer self-service portal.` |
 | Author | Package metadata | `Dingola` |
 | Repository owner | Generated GitHub links | `Dingola` |
+| HTML language | Root document BCP 47 language tag | `en` |
 | Package manager | Commands and CI configuration | `npm` |
 | Express API | Optional Node.js API and production server | `false` |
 | Docker | Optional multi-stage production image | `false` |
@@ -155,6 +163,9 @@ git commit -m "Initialize project from ReactWebTemplate"
 git push
 ```
 
+Package lock files contain resolved dependency versions, registry locations, and
+integrity hashes and are intended to be committed.
+
 ## Generated project
 
 The standard project contains:
@@ -163,8 +174,8 @@ The standard project contains:
 - strict TypeScript with additional correctness checks;
 - Vite for the development server and production build;
 - CSS Modules and a small design-token foundation;
-- accessible application layout, skip navigation, focus styles, and reduced-motion
-  support;
+- accessible application layout, skip navigation, focus styles, reduced-motion support,
+  JSX accessibility linting, and an Axe browser check;
 - persistent light, dark, and system theme preferences;
 - Zod-validated environment variables and a typed API boundary;
 - ESLint, Stylelint, Prettier, Vitest, Testing Library, and Playwright;
@@ -223,6 +234,7 @@ that suffix while rendering.
 |-- copier.yml
 |-- initialize.cmd
 |-- initialize.ps1
+|-- initialize.sh
 |-- README.md
 `-- template/
     |-- .github/workflows/
@@ -244,10 +256,12 @@ After changing the template:
 1. Generate the default configuration.
 2. Generate an Express/Docker configuration.
 3. Install dependencies in both generated projects.
-4. Run `npm run check` in both projects.
-5. Review and commit the template changes.
-6. Push `main` and wait for **Validate Copier Template**.
-7. Create a new PEP 440-compatible template tag.
+4. Generate and verify the pnpm variant and an answer set containing special characters.
+5. Run `npm run check` or `pnpm check` in every generated project.
+6. Verify `copier update` against a clean generated repository.
+7. Review and commit the template changes.
+8. Push `main` and wait for **Validate Copier Template**.
+9. Create a new PEP 440-compatible template tag.
 
 Example local generation:
 
@@ -303,3 +317,11 @@ intentionally discard unrelated changes before running it again.
 
 Bootstrap files are retained when Copier fails. Correct the reported problem and run
 `.\initialize.cmd` again. Do not manually remove `template/` or `copier.yml`.
+
+## GitHub Actions compatibility
+
+The workflows intentionally use `actions/checkout@v4` and `actions/setup-node@v4`.
+Major version 5 and newer use the Node.js 24 action runtime and require GitHub Actions
+Runner 2.327.1 or newer. Keeping version 4 preserves compatibility with older
+self-hosted and GitHub Enterprise Server runners. Revisit this decision when those
+runners are no longer supported by projects generated from this template.

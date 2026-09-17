@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "{{ display_name }} API Documentation",
+  "name": {{ (display_name ~ ' API Documentation') | tojson }},
   "entryPoints": ["src"],
   "entryPointStrategy": "expand",
   "out": "docs/api",

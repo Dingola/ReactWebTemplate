@@ -117,11 +117,16 @@ the listener. This separation lets integration tests import the Express applicat
 without starting a second process. Add product-specific backend code by feature and
 mount its router in `app.ts`.
 
+The included integration tests exercise health reporting, security headers, unknown API
+routes, and the client routing fallback through an ephemeral local port. Unknown `/api`
+routes return JSON instead of accidentally serving the SPA.
+
 ## Testing strategy
 
 - Unit tests cover pure transformation and validation logic.
 - React Testing Library covers behavior visible to a component user.
 - Playwright covers a small number of critical cross-page browser flows.
+- Axe checks automatically detectable accessibility violations in the rendered page.
 
 Prefer observable behavior over implementation details. A feature should not require a
 browser test for every branch when faster unit or component tests provide the same
@@ -134,7 +139,7 @@ architecture and development workflows, while TSDoc-compatible source comments d
 the contracts of exported components, hooks, types, and infrastructure.
 
 TypeDoc generates navigable HTML API documentation in `docs/api`. Generated output is
-ignored by Git because it is reproducible with `npm run docs`. The complete quality gate
+ignored by Git because it is reproducible with `npm run docs:api`. The complete quality gate
 also generates the documentation and treats TypeDoc validation warnings as errors.
 
 Document purpose, behavior, side effects, defaults, constraints, and failure modes. Do

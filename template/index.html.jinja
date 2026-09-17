@@ -1,12 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ html_lang | e }}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="{{ project_description }}" />
+    <!-- prettier-ignore: Copier safely escapes this generated attribute. -->
+    <meta name="description" content="{{ project_description | e }}" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
-    <title>{{ display_name }}</title>
+    <title>{{ display_name | e }}</title>
   </head>
   <body>
     <noscript>This application requires JavaScript to run.</noscript>

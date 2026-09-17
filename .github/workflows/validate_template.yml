@@ -20,6 +20,7 @@ jobs:
 
     steps:
       - name: Checkout template repository
+        # v4 supports older self-hosted/GHES runners. v5+ requires runner 2.327.1.
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -31,9 +32,15 @@ jobs:
         run: python -m pip install "copier>=9,<10"
 
       - name: Set up Node.js
+        # v4 supports older self-hosted/GHES runners. v5+ requires runner 2.327.1.
         uses: actions/setup-node@v4
         with:
           node-version: 24
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
 
       - name: Generate default project
         shell: bash
@@ -45,7 +52,7 @@ jobs:
             --data "project_name=${DEFAULT_PROJECT_NAME}" \
             --data "display_name=React Web Template Smoke Test" \
             --data "package_name=react-web-template-smoke-test" \
-            . "${generated_dir}"
+            "${GITHUB_WORKSPACE}" "${generated_dir}"
 
           test -f "${generated_dir}/.copier-answers.yml"
           test -f "${generated_dir}/package.json"
@@ -62,6 +69,7 @@ jobs:
           test ! -e "${generated_dir}/copier.yml"
           test ! -e "${generated_dir}/initialize.cmd"
           test ! -e "${generated_dir}/initialize.ps1"
+          test ! -e "${generated_dir}/initialize.sh"
           test ! -e "${generated_dir}/template"
 
       - name: Check default project
@@ -71,6 +79,19 @@ jobs:
           cd "${generated_dir}"
           npm install
           npm run check
+
+      - name: Verify Copier update
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/${DEFAULT_PROJECT_NAME}"
+          cd "${generated_dir}"
+          git init
+          git config user.name "Template Validation"
+          git config user.email "template-validation@example.invalid"
+          git add .
+          git commit -m "Initialize generated project"
+          copier update --defaults --vcs-ref HEAD
+          git diff --exit-code
 
       - name: Generate full project
         shell: bash
@@ -89,6 +110,7 @@ jobs:
 
           test -f "${generated_dir}/server/index.ts"
           test -f "${generated_dir}/server/app.ts"
+          test -f "${generated_dir}/server/app.test.ts"
           test -f "${generated_dir}/server/config/environment.ts"
           test -f "${generated_dir}/server/routes/health.ts"
           test -f "${generated_dir}/Dockerfile"
@@ -101,6 +123,28 @@ jobs:
           cd "${generated_dir}"
           npm install
           npm run check
+
+      - name: Generate and check pnpm project in a path with spaces
+        shell: bash
+        run: |
+          generated_dir="${RUNNER_TEMP}/React Web Template pnpm Test"
+          copier copy \
+            --defaults \
+            --vcs-ref HEAD \
+            --data "project_name=ReactWebTemplatePnpmTest" \
+            --data "display_name=Adrian's \"Accessible\" Portfolio" \
+            --data "package_name=react-web-template-pnpm-test" \
+            --data "project_description=An accessible site for Renée's projects & notes." \
+            --data "author_name=Renée \"Dingola\" Example" \
+            --data "html_lang=en-GB" \
+            --data "package_manager=pnpm" \
+            . "${generated_dir}"
+
+          cd "${generated_dir}"
+          pnpm install
+          pnpm check
+          test -f pnpm-lock.yaml
+          grep -q 'lang="en-GB"' index.html
 
       - name: Generate GitHub Pages project
         shell: bash

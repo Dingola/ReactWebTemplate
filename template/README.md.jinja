@@ -56,7 +56,8 @@ business logic.
 
 ## Supported platforms
 
-- current stable Chrome, Edge, Firefox, and Safari releases
+- current evergreen browsers; Chromium is exercised automatically in continuous
+  integration, while Firefox and Safari/WebKit require project-specific testing
 - Windows, Linux, and macOS development environments supported by Node.js 24
 - responsive layouts down to a minimum viewport width of 320 pixels
 
@@ -89,8 +90,11 @@ npm install
 ```
 {% endif %}
 
-Copy `.env.example` to `.env.local` when local values must differ from the defaults. Do
-not commit secrets or local environment files.
+Commit the generated `{{ 'pnpm-lock.yaml' if package_manager == 'pnpm' else 'package-lock.json' }}`.
+Continuous integration{% if include_docker %} and Docker builds{% endif %} use this file
+for reproducible installations.
+
+Copy `.env.example` to `.env.local` when local values must differ from the defaults.
 
 ## Development
 
@@ -141,7 +145,7 @@ After building, run the production Express server with:
 | `{{ 'pnpm test' if package_manager == 'pnpm' else 'npm test' }}` | Run unit and component tests once |
 | `{{ 'pnpm test:watch' if package_manager == 'pnpm' else 'npm run test:watch' }}` | Run tests while developing |
 | `{{ 'pnpm test:e2e' if package_manager == 'pnpm' else 'npm run test:e2e' }}` | Run Playwright browser tests |
-| `{{ 'pnpm docs' if package_manager == 'pnpm' else 'npm run docs' }}` | Generate HTML API documentation from source comments |
+| `{{ 'pnpm docs:api' if package_manager == 'pnpm' else 'npm run docs:api' }}` | Generate HTML API documentation from source comments |
 | `{{ 'pnpm check' if package_manager == 'pnpm' else 'npm run check' }}` | Run the complete local quality gate |
 
 Install the Playwright browser once before the first local browser test:
@@ -208,7 +212,7 @@ Exported components, hooks, types, and infrastructure use English TSDoc-compatib
 comments. Generate navigable HTML documentation with:
 
 ```powershell
-{{ 'pnpm docs' if package_manager == 'pnpm' else 'npm run docs' }}
+{{ 'pnpm docs:api' if package_manager == 'pnpm' else 'npm run docs:api' }}
 ```
 
 TypeDoc writes the generated site to `docs/api`. That directory is intentionally ignored
@@ -241,13 +245,18 @@ untrusted responses with Zod before application code relies on them.
 Global design values live in `src/styles/tokens.css`; component styles remain next to
 their components as CSS Modules. The initial shell includes keyboard skip navigation,
 visible focus indicators, semantic landmarks, responsive sizing, and reduced-motion
-handling. Preserve these behaviors as the design evolves.
+handling. ESLint statically checks JSX accessibility rules, while the Playwright smoke
+test runs Axe against the rendered page. These checks complement rather than replace
+keyboard, screen-reader, zoom, contrast, and browser testing.
 
 ## Testing and code quality
 
 Vitest runs unit and component tests in a browser-like JSDOM environment. React Testing
 Library encourages tests through accessible user-facing queries. Playwright validates
-the built application in a real Chromium browser.
+the built application and its automated Axe scan in a real Chromium browser.
+{% if include_express %}Vitest also exercises the health endpoint, unknown API routes,
+security headers, and client-side routing fallback against a running Express instance.
+{% endif %}
 
 ESLint checks TypeScript and React rules, Stylelint checks CSS, Prettier provides a
 single formatting convention, and TypeDoc validates source documentation. Run the
@@ -262,9 +271,13 @@ complete gate before pushing:
 `.github/workflows/ci.yml` checks formatting, linting, types, unit tests, generated API
 documentation, the production build, and a Chromium smoke test on pushes and pull
 requests targeting `main`.
-Commit the generated lock file so dependency installation is reproducible; after the
-first commit, changing workflow installation from `npm install` to `npm ci` is
-recommended for npm projects.
+The workflow requires the generated lock file and uses a frozen installation. Dependabot
+checks npm and GitHub Actions dependencies weekly{% if include_docker %}, as well as the
+Docker base image{% endif %}.
+
+The workflows intentionally retain `actions/checkout@v4` and `actions/setup-node@v4`.
+Major version 5 and newer require Actions Runner 2.327.1 or newer; version 4 keeps older
+self-hosted and GitHub Enterprise Server runners compatible.
 
 {% if deployment == 'github_pages' %}
 ## GitHub Pages deployment
@@ -282,6 +295,10 @@ build command and `dist` output directory.
 
 {% endif %}{% if include_docker %}
 ## Docker
+
+Create and commit the package-manager lock file before building the image. Docker uses
+frozen dependency installation and intentionally fails when the manifest and lock file
+do not match.
 
 Build the production image:
 

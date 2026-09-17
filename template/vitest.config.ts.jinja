@@ -13,7 +13,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+{% if include_express %}
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'server/**/*.{test,spec}.ts'],
+{% else %}
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+{% endif %}
     setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',

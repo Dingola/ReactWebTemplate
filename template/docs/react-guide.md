@@ -163,7 +163,7 @@ browser compatibility.
 Generate navigable HTML API documentation from the source comments with:
 
 ```powershell
-npm run docs
+npm run docs:api
 ```
 
 The output is written to `docs/api` and intentionally excluded from version control.

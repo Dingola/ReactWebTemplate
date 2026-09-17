@@ -10,9 +10,12 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-    "sourceMap": true
+    "sourceMap": false
   },
-  "include": ["**/*.ts"]
+  "include": ["app.ts", "index.ts", "config/**/*.ts", "routes/**/*.ts"]
 }

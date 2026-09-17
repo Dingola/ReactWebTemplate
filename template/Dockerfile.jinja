@@ -1,11 +1,12 @@
 # syntax=docker/dockerfile:1
 FROM node:24-alpine AS build
 WORKDIR /app
-COPY package.json ./
 {% if package_manager == 'pnpm' %}
-RUN corepack enable && pnpm install --no-frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && pnpm install --frozen-lockfile
 {% else %}
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 {% endif %}
 COPY . .
 RUN {{ 'pnpm build' if package_manager == 'pnpm' else 'npm run build' }}
@@ -16,11 +17,12 @@ ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=3000
 WORKDIR /app
-COPY package.json ./
 {% if package_manager == 'pnpm' %}
-RUN corepack enable && pnpm install --prod --no-frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && pnpm install --prod --frozen-lockfile
 {% else %}
-RUN npm install --omit=dev && npm cache clean --force
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 {% endif %}
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server

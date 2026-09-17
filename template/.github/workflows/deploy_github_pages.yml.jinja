@@ -23,16 +23,18 @@ jobs:
 
     steps:
       - name: Checkout repository
+        # v4 supports older self-hosted/GHES runners. v5+ requires runner 2.327.1.
         uses: actions/checkout@v4
 
 {% if package_manager == 'pnpm' %}
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.33.4
 
 {% endif %}
       - name: Set up Node.js
+        # v4 supports older self-hosted/GHES runners. v5+ requires runner 2.327.1.
         uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -40,13 +42,13 @@ jobs:
 
 {% if package_manager == 'pnpm' %}
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build application
         run: pnpm build
 {% else %}
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build application
         run: npm run build
